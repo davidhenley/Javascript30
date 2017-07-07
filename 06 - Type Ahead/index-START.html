@@ -14,8 +14,47 @@
       <li>or a state</li>
     </ul>
   </form>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
-const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+  // Get data
+  const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+
+  let places = [];
+  axios.get(endpoint)
+    .then(response => {
+      places = response.data || [];
+    });
+
+  const searchForm = document.querySelector('.search');
+  const suggestions = document.querySelector('.suggestions');
+
+  function findResults(search, places) {
+    const regex = new RegExp(search, 'gi');
+    return places.filter(place => {
+      return place.city.match(regex) || place.state.match(regex);
+    });
+  }
+
+  function displayResults() {
+    const results = findResults(this.value, places);
+    let html = '';
+    if (this.value) {
+      results.map(result => {
+        const regex = new RegExp(this.value, 'gi');
+        const city = result.city.replace(regex, `<span class="hl">${this.value}</span>`);
+        const state = result.state.replace(regex, `<span class="hl">${this.value}</span>`);
+        html += `
+          <li>
+            <span>${city}, ${state}</span>
+            <span class="population">${Number(result.population).toLocaleString()}</span>
+          </li>`;
+      });
+    }
+    suggestions.innerHTML = html;
+  }
+
+  searchForm.addEventListener('change', displayResults);
+  searchForm.addEventListener('keyup', displayResults);
 
 </script>
   </body>
