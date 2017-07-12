@@ -26,6 +26,11 @@
       .join('');
 
     p.textContent = transcript;
+
+    if (transcript.includes('unicorn')) {
+      alert('You got the magic word');
+    }
+
     if (e.results[0].isFinal) {
       p = document.createElement('p');
       words.appendChild(p);
