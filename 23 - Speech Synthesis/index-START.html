@@ -10,7 +10,7 @@
 
     <div class="voiceinator">
 
-      <h1>The Voiceinator 5000</h1>
+      <h1>Henleybot 5000</h1>
 
       <select name="voice" id="voices">
         <option value="">Select A Voice</option>
@@ -20,9 +20,10 @@
       <input name="rate" type="range" min="0" max="3" value="1" step="0.1">
 
       <label for="pitch">Pitch:</label>
-
       <input name="pitch" type="range" min="0" max="2" step="0.1">
+
       <textarea name="text">Hello! I love JavaScript 👍</textarea>
+
       <button id="stop">Stop!</button>
       <button id="speak">Speak</button>
 
@@ -35,6 +36,43 @@
   const options = document.querySelectorAll('[type="range"], [name="text"]');
   const speakButton = document.querySelector('#speak');
   const stopButton = document.querySelector('#stop');
+
+  // Set default text
+  msg.text = document.querySelector('[name="text"]').value;
+
+  // Populate voice options
+  function populateVoices() {
+    voices = this.getVoices();
+    voicesDropdown.innerHTML = voices
+      .filter(voice => voice.lang.includes('en-'))
+      .map(voice => `<option value="${voice.name}">${voice.name} (${voice.lang})</option>`).join('');
+  }
+
+  // Change voice from dropdown
+  function setVoice() {
+    // You need to find the cooresponding voice object to the name
+    msg.voice = voices.find(voice => voice.name === this.value);
+  }
+
+  function toggle(startOver = true) {
+    // Cancel anything currently speaking
+    speechSynthesis.cancel();
+    // Restart the speech if startOver = true
+    startOver && speechSynthesis.speak(msg);
+  }
+
+  // Change options on change of sliders or textarea
+  function setOption() {
+    msg[this.name] = this.value;
+    toggle();
+  }
+
+  speechSynthesis.addEventListener('voiceschanged', populateVoices);
+  voicesDropdown.addEventListener('change', setVoice);
+  options.forEach(option => option.addEventListener('change', setOption));
+  speakButton.addEventListener('click', toggle);
+  stopButton.addEventListener('click', () => toggle(false));
+
 </script>
 
 </body>
