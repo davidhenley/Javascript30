@@ -40,6 +40,31 @@
 <button></button>
 <script>
 
+  /*
+  * If you were to click on the middle div, all 3 listeners will fire
+  * Click event also happens on body, window...
+  * Click capture starts at the bottom of the DOM, then "bubbles" up
+  * Unless you set capture to true in third listener argument
+  */
+
+  const divs = document.querySelectorAll('div');
+  const button = document.querySelector('button');
+
+  function logText(e) {
+    console.log(this.classList.value);
+    // This stops bubbling up/down from happening
+    // e.stopPropagation();
+  }
+
+  divs.forEach(div => div.addEventListener('click', logText, {
+    capture: false, // By making capture: true, the events get called in DOM order instead.
+    once: true // Unbind itself after the first event
+  }));
+
+  button.addEventListener('click', () => {
+    console.log('Clicked!')
+  }, { once: true }); // Useful for store checkouts
+
 </script>
 </body>
 </html>
